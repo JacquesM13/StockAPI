@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
-ACCESS_KEY = ""
+ACCESS_KEY = os.environ.get('ACCESS_KEY')
 endpoint = "http://api.marketstack.com/v2/eod/latest"
 
 app = Flask(__name__)
