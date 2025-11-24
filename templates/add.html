@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {% from 'bootstrap5/form.html' import render_form %}
+    {% block head %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% block styles %}
+    <!-- Bootstrap CSS -->
+    {{ bootstrap.load_css() }}
+    {% endblock %}
+
+    <title>Add</title>
+    {% endblock %}
+</head>
+<body>
+<div class="content container col-md-8 align-items-center">
+    <h1>Add a stock</h1>
+    <form class="col-md-4" method="POST" action="{{ url_for('add') }}">
+        {{ render_form(form) }}
+    </form>
+</div>
+</body>
+</html>

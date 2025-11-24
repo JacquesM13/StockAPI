@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {% block head %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% block styles %}
+    <!-- Bootstrap CSS -->
+    {{ bootstrap.load_css() }}
+    {% endblock %}
+
+    <title>Home</title>
+    {% endblock %}
+</head>
+<body>
+<!-- Your page content -->
+{% block content %}
+
+<header class="p-3 mb-3 border-bottom">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <h1 class="me-auto">Stock Tracker</h1>
+            <a href="{{ url_for('add') }}">Add Stock</a>
+        </div>
+    </div>
+</header>
+
+<div class="col-md-6 p-4">
+    <table class="table">
+        <tr>
+            <th>Company</th>
+            <th>Open</th>
+            <th>Close</th>
+            <th>Symbol</th>
+        </tr>
+        <tr>
+            <td>{{ data['name'] }}</td>
+            <td>{{ data['open'] }}</td>
+            <td>{{ data['close'] }}</td>
+            <td>{{ data['symbol'] }}</td>
+        </tr>
+    </table>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<!-- Optional JavaScript -->
+{{ bootstrap.load_js() }}
+{% endblock %}
+</body>
+</html>
+
+
+
+
