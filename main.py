@@ -1,23 +1,13 @@
 import requests
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
-# ACCESS_KEY = ""
-# endpoint = "http://api.marketstack.com/v2/eod/latest"
-#
-# params = {"access_key": ACCESS_KEY,
-#           "symbols": "AAPL"}
-#
-# response = requests.get(endpoint, params=params)
-# response.raise_for_status()
-# data = response.json()
-data = {'pagination': {'limit': 100, 'offset': 0, 'count': 1, 'total': 1}, 'data': [{'open': 265.95, 'high': 273.33, 'low': 265.67, 'close': 271.49, 'volume': 58784100.0, 'adj_high': 273.33, 'adj_low': 265.67, 'adj_close': 271.49, 'adj_open': 265.95, 'adj_volume': 59030832.0, 'split_factor': 1.0, 'dividend': 0.0, 'name': 'Apple Inc', 'exchange_code': 'NASDAQ', 'asset_type': 'Stock', 'price_currency': 'USD', 'symbol': 'AAPL', 'exchange': 'XNAS', 'date': '2025-11-21T00:00:00+0000'}]}
-data = data['data'][0]
-print(data)
+ACCESS_KEY = ""
+endpoint = "http://api.marketstack.com/v2/eod/latest"
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movie_database.db'
@@ -41,16 +31,36 @@ class StockForm(FlaskForm):
 with app.app_context():
     db.create_all()
 
+def fetch_stock(symbol):
+    response = requests.get(endpoint, params={'access_key': ACCESS_KEY, 'symbols': symbol})
+    data = response.json()
+    data = data['data'][0]
+    return data
+
+
 @app.route('/')
 def home():
-    return render_template('home.html', data=data)
+    stocks = db.session.execute(db.select(Stock))
+    stocks = stocks.scalars().all()
+    print(stocks)
+    return render_template('home.html', stocks=stocks)
 
 @app.route('/add', methods=['POST', 'GET'])
 def add():
     form = StockForm()
     if form.validate_on_submit():
         symbol = form.symbol.data
-    #     Add a bit here that calls the API
+        print(symbol)
+        data = fetch_stock(symbol)
+        new_data = Stock(
+            name=data['name'],
+            open=data['open'],
+            close=data['close'],
+            symbol=data['symbol']
+        )
+        db.session.add(new_data)
+        db.session.commit()
+        return redirect(url_for('home'))
     return render_template('add.html', form=form)
 
 if __name__ == '__main__':
