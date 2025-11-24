@@ -35,12 +35,14 @@
             <th>Close</th>
             <th>Symbol</th>
         </tr>
+        {% for stock in stocks %}
         <tr>
-            <td>{{ data['name'] }}</td>
-            <td>{{ data['open'] }}</td>
-            <td>{{ data['close'] }}</td>
-            <td>{{ data['symbol'] }}</td>
+            <td>{{ stock.name }}</td>
+            <td>{{ stock.open }}</td>
+            <td>{{ stock.close }}</td>
+            <td>{{ stock.symbol }}</td>
         </tr>
+        {% endfor %}
     </table>
 </div>
 
