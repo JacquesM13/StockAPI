@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {% block head %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% block styles %}
+    <!-- Bootstrap CSS -->
+    {{ bootstrap.load_css() }}
+    {% endblock %}
+
+    <title>Details</title>
+    {% endblock %}
+</head>
+<body>
+<!-- Your page content -->
+{% block content %}
+
+<header class="p-3 mb-3 border-bottom">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <h1 class="me-auto">Stock Tracker</h1>
+        </div>
+    </div>
+</header>
+
+<div class="col-md-8 p-4">
+    <a href="{{ url_for('home') }}" class="button">Back</a>
+    <table class="table align-items-center">
+        <tr>
+            <th>Company</th>
+            <th>Open</th>
+            <th>Close</th>
+            <th>Volume</th>
+            <th>High</th>
+            <th>Low</th>
+            <th>Currency</th>
+            <th>Symbol</th>
+            <th>Exchange Code</th>
+        </tr>
+        <tr>
+            <td>{{ stock.name }}</td>
+            <td>{{ stock.open }}</td>
+            <td>{{ stock.close }}</td>
+            <td>{{ stock.volume }}</td>
+            <td>{{ stock.high }}</td>
+            <td>{{ stock.low }}</td>
+            <td>{{ stock.price_currency }}</td>
+            <td>{{ stock.symbol }}</td>
+            <td>{{ stock.exchange_code }}</td>
+        </tr>
+    </table>
+    <a href="{{ url_for('update_stocks') }}">Update</a>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<!-- Optional JavaScript -->
+{{ bootstrap.load_js() }}
+{% endblock %}
+</body>
+</html>
