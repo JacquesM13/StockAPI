@@ -45,7 +45,7 @@ def fetch_stock(symbol):
     response = requests.get(endpoint, params={'access_key': ACCESS_KEY, 'symbols': symbol})
     data = response.json()
     data = data['data'][0]
-    print(data)
+    # print(data)
     return data
 
 
@@ -53,7 +53,7 @@ def fetch_stock(symbol):
 def home():
     stocks = db.session.execute(db.select(Stock))
     stocks = stocks.scalars().all()
-    print(stocks)
+    # print(stocks)
     return render_template('home.html', stocks=stocks)
 
 @app.route('/add', methods=['POST', 'GET'])
@@ -61,7 +61,7 @@ def add():
     form = StockForm()
     if form.validate_on_submit():
         symbol = form.symbol.data
-        print(symbol)
+        # print(symbol)
         data = fetch_stock(symbol)
         new_data = Stock(
             name=data['name'],
@@ -86,10 +86,18 @@ def delete_stock(symbol):
     db.session.commit()
     return redirect(url_for('home'))
 
-@app.route('/update')
-def update_stocks():
-    # Function to update all stocks currently in database
-    pass
+@app.route('/update/<string:symbol>')
+def update_stocks(symbol):
+    stock_to_update = db.get_or_404(Stock, symbol)
+    # print(stock_to_update)
+    data = fetch_stock(stock_to_update.symbol)
+    stock_to_update.open = data['open']
+    stock_to_update.close = data['close']
+    stock_to_update.volume = data['volume']
+    stock_to_update.high = data['high']
+    stock_to_update.low = data['low']
+    db.session.commit()
+    return redirect(url_for('home'))
 
 @app.route('/details/<string:symbol>')
 def details(symbol):
