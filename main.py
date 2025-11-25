@@ -5,13 +5,16 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+import os
 
+# ACCESS_KEY = "78421e11c87b30aca160257edc630b34"
 ACCESS_KEY = os.environ.get('ACCESS_KEY')
 SECRET_KEY = os.environ.get('SECRET_KEY')
+
 endpoint = "http://api.marketstack.com/v2/eod/latest"
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movie_database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///stock_database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = SECRET_KEY
 
@@ -20,10 +23,16 @@ db = SQLAlchemy(app)
 Bootstrap5(app)
 
 class Stock(db.Model):
-    name = db.Column(db.String(50), primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
     open = db.Column(db.Float, nullable=False)
     close = db.Column(db.Float, nullable=False)
-    symbol = db.Column(db.String(50), nullable=False)
+    symbol = db.Column(db.String(50), nullable=False, primary_key=True)
+    volume = db.Column(db.Float, nullable=False)
+    high = db.Column(db.Float, nullable=False)
+    low = db.Column(db.Float, nullable=False)
+    exchange_code = db.Column(db.String(20), nullable=False)
+    price_currency = db.Column(db.String(20), nullable=False)
+
 
 class StockForm(FlaskForm):
     symbol = StringField('Symbol', validators=[DataRequired()])
@@ -36,6 +45,7 @@ def fetch_stock(symbol):
     response = requests.get(endpoint, params={'access_key': ACCESS_KEY, 'symbols': symbol})
     data = response.json()
     data = data['data'][0]
+    print(data)
     return data
 
 
@@ -57,12 +67,34 @@ def add():
             name=data['name'],
             open=data['open'],
             close=data['close'],
+            price_currency=data['price_currency'],
+            exchange_code=data['exchange_code'],
+            high=data['high'],
+            low=data['low'],
+            volume=data['volume'],
             symbol=data['symbol']
         )
         db.session.add(new_data)
         db.session.commit()
         return redirect(url_for('home'))
     return render_template('add.html', form=form)
+
+@app.route('/delete/<string:symbol>')
+def delete_stock(symbol):
+    stock_to_delete = db.get_or_404(Stock, symbol)
+    db.session.delete(stock_to_delete)
+    db.session.commit()
+    return redirect(url_for('home'))
+
+@app.route('/update')
+def update_stocks():
+    # Function to update all stocks currently in database
+    pass
+
+@app.route('/details/<string:symbol>')
+def details(symbol):
+    stock = db.get_or_404(Stock, symbol)
+    return render_template('details.html', stock=stock)
 
 if __name__ == '__main__':
     app.run(debug=True)
