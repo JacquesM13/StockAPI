@@ -52,7 +52,7 @@
             <td>{{ stock.exchange_code }}</td>
         </tr>
     </table>
-    <a href="{{ url_for('update_stocks') }}">Update</a>
+    <a href="{{ url_for('update_stocks', symbol = stock.symbol) }}">Update</a>
 </div>
 
 {% endblock %}
