@@ -28,22 +28,27 @@
 </header>
 
 <div class="col-md-6 p-4">
-    <table class="table">
+    <table class="table align-items-center">
         <tr>
             <th>Company</th>
             <th>Open</th>
             <th>Close</th>
+            <th>Currency</th>
             <th>Symbol</th>
+            <th>Delete</th>
         </tr>
         {% for stock in stocks %}
         <tr>
-            <td>{{ stock.name }}</td>
+            <td><a href="{{ url_for('details', symbol=stock.symbol) }}">{{ stock.name }}</a></td>
             <td>{{ stock.open }}</td>
             <td>{{ stock.close }}</td>
+            <td>{{ stock.price_currency }}</td>
             <td>{{ stock.symbol }}</td>
+            <td><a class="align-items-center" href="{{ url_for('delete_stock', symbol=stock.symbol) }}">✘</a></td>
         </tr>
         {% endfor %}
     </table>
+    <a href="{{ url_for('update_stocks') }}">Update</a>
 </div>
 
 {% endblock %}
